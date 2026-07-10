@@ -14,35 +14,49 @@ app.use(express.json());
 // MongoDB Connection
 // ======================
 
-async function connectDB() {
+async function startServer() {
     try {
+
         await mongoose.connect(
             process.env.MONGODB_URI ||
-            "mongodb+srv://rishi:rishi0410@cluster0.mylxse.mongodb.net/familyLocation?retryWrites=true&w=majority&appName=Cluster0"
+            "mongodb+srv://rishi:Gand0410@cluster0.mylxse.mongodb.net/familyLocation?retryWrites=true&w=majority&appName=Cluster0"
         );
 
         console.log("✅ MongoDB Connected");
 
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+        });
+
     } catch (err) {
 
-        console.error("❌ MongoDB Connection Error");
-        console.error(err.message);
+        console.error("❌ MongoDB Connection Failed");
+        console.error(err);
 
         process.exit(1);
 
     }
 }
 
-connectDB();
+startServer();
 
 // ======================
 // Schema
 // ======================
 
 const locationSchema = new mongoose.Schema({
-    phone: String,
-    latitude: Number,
-    longitude: Number,
+    phone: {
+        type: String,
+        required: true
+    },
+    latitude: {
+        type: Number,
+        required: true
+    },
+    longitude: {
+        type: Number,
+        required: true
+    },
     time: {
         type: Date,
         default: Date.now
@@ -83,7 +97,7 @@ app.post("/location", async (req, res) => {
 
         res.json({
             success: true,
-            message: "Saved"
+            message: "Location saved successfully"
         });
 
     } catch (err) {
@@ -107,7 +121,7 @@ app.get("/locations", async (req, res) => {
 
     try {
 
-        const locations = await Location.find().sort({ _id: -1 });
+        const locations = await Location.find().sort({ time: -1 });
 
         res.json(locations);
 
@@ -127,12 +141,4 @@ app.get("/locations", async (req, res) => {
 
 app.get("/", (req, res) => {
     res.send("✅ Family Location Server Running");
-});
-
-// ======================
-// Start Server
-// ======================
-
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
 });
