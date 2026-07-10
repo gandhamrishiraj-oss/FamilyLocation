@@ -1,10 +1,11 @@
 console.log("SERVER FILE STARTED");
+
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -13,13 +14,26 @@ app.use(express.json());
 // MongoDB Connection
 // ======================
 
-mongoose.connect("mongodb://127.0.0.1:27017/familyLocation")
-.then(() => {
-    console.log("✅ MongoDB Connected");
-})
-.catch((err) => {
-    console.error("❌ MongoDB Error:", err);
-});
+async function connectDB() {
+    try {
+        await mongoose.connect(
+            process.env.MONGODB_URI ||
+            "mongodb+srv://rishi:rishi0410@cluster0.mylxse.mongodb.net/familyLocation?retryWrites=true&w=majority&appName=Cluster0"
+        );
+
+        console.log("✅ MongoDB Connected");
+
+    } catch (err) {
+
+        console.error("❌ MongoDB Connection Error");
+        console.error(err.message);
+
+        process.exit(1);
+
+    }
+}
+
+connectDB();
 
 // ======================
 // Schema
@@ -112,7 +126,7 @@ app.get("/locations", async (req, res) => {
 // ======================
 
 app.get("/", (req, res) => {
-    res.send("Family Location Server Running");
+    res.send("✅ Family Location Server Running");
 });
 
 // ======================
@@ -120,5 +134,5 @@ app.get("/", (req, res) => {
 // ======================
 
 app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
