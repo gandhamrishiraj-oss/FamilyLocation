@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Location</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+</head>
+<body>
+
+<div class="container">
+    <h1>Family Location Sharing</h1>
+
+    <p>Please enter your mobile number and share your location.</p>
+
+    <input type="tel" id="phone" placeholder="Enter Mobile Number">
+
+    <button id="shareBtn">Share My Location</button>
+
+    <p id="status"></p>
+</div>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- Your JavaScript -->
+<script src="script.js"></script>
+
+</body>
+</html>

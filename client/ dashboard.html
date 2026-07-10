@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Family Dashboard</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            background: #2563eb;
+            color: white;
+            padding: 15px;
+            margin: 0;
+        }
+
+        #map {
+            height: 80vh;
+            width: 100%;
+        }
+
+        .info {
+            padding: 10px;
+            background: white;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<h1>Family Location Dashboard</h1>
+
+<div class="info">
+    <p id="status">Loading locations...</p>
+</div>
+
+<div id="map"></div>
+
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+let map = L.map("map").setView([20.5937,78.9629],5);
+
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+
+    attribution: "&copy; OpenStreetMap contributors"
+
+}).addTo(map);
+
+
+
+async function loadLocations(){
+
+    const response = await fetch("http://localhost:3000/locations");
+
+    const locations = await response.json();
+
+
+    document.getElementById("status").innerText =
+    locations.length + " family member location(s) found";
+
+
+    locations.forEach(loc => {
+
+
+        L.marker([
+            loc.latitude,
+            loc.longitude
+        ])
+        .addTo(map)
+        .bindPopup(
+            `
+            <b>Phone:</b> ${loc.phone}<br>
+            <b>Updated:</b> ${loc.time}
+            `
+        );
+
+
+    });
+
+}
+
+
+loadLocations();
+
+
+setInterval(loadLocations,5000);
+
+
+</script>
+
+
+</body>
+</html>
