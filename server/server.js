@@ -17,10 +17,11 @@ app.use(express.json());
 async function startServer() {
     try {
 
-        await mongoose.connect(
+        const MONGO_URI =
             process.env.MONGODB_URI ||
-            "mongodb+srv://rishi:Gand0410@cluster0.mylxse.mongodb.net/familyLocation?retryWrites=true&w=majority&appName=Cluster0"
-        );
+            "mongodb+srv://rishi:Family%401234@cluster0.mylxse.mongodb.net/familyLocation?retryWrites=true&w=majority&appName=Cluster0";
+
+        await mongoose.connect(MONGO_URI);
 
         console.log("✅ MongoDB Connected");
 
@@ -31,10 +32,10 @@ async function startServer() {
     } catch (err) {
 
         console.error("❌ MongoDB Connection Failed");
+        console.error("Message:", err.message);
         console.error(err);
 
         process.exit(1);
-
     }
 }
 
@@ -71,9 +72,6 @@ const Location = mongoose.model("Location", locationSchema);
 
 app.post("/location", async (req, res) => {
 
-    console.log("POST /location");
-    console.log(req.body);
-
     try {
 
         const { phone, latitude, longitude } = req.body;
@@ -97,7 +95,7 @@ app.post("/location", async (req, res) => {
 
         res.json({
             success: true,
-            message: "Location saved successfully"
+            message: "Location Saved Successfully"
         });
 
     } catch (err) {
