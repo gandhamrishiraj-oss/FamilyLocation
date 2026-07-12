@@ -46,7 +46,7 @@ startServer();
 // ======================
 
 const locationSchema = new mongoose.Schema({
-    phone: {
+    name: {
         type: String,
         required: true
     },
@@ -71,19 +71,22 @@ const Location = mongoose.model("Location", locationSchema);
 // ======================
 
 app.post("/location", async (req, res) => {
+
     try {
 
-        const { phone, latitude, longitude } = req.body;
+        const { name, latitude, longitude } = req.body;
 
-        if (!phone || latitude == null || longitude == null) {
+        if (!name || latitude == null || longitude == null) {
+
             return res.status(400).json({
                 success: false,
                 message: "Missing data"
             });
+
         }
 
         const location = new Location({
-            phone,
+            name,
             latitude,
             longitude
         });
@@ -107,6 +110,7 @@ app.post("/location", async (req, res) => {
         });
 
     }
+
 });
 
 // ======================
@@ -114,6 +118,7 @@ app.post("/location", async (req, res) => {
 // ======================
 
 app.get("/locations", async (req, res) => {
+
     try {
 
         const locations = await Location.find().sort({ time: -1 });
@@ -127,6 +132,7 @@ app.get("/locations", async (req, res) => {
         res.status(500).json([]);
 
     }
+
 });
 
 // ======================
@@ -134,5 +140,5 @@ app.get("/locations", async (req, res) => {
 // ======================
 
 app.get("/", (req, res) => {
-    res.send("✅ Family Location Server Running");
+    res.send("✅ Location Sharing Server Running");
 });
