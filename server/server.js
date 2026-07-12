@@ -19,7 +19,7 @@ async function startServer() {
 
         const MONGO_URI =
             process.env.MONGODB_URI ||
-            "mongodb+srv://rishi:Family%401234@cluster0.mylxse.mongodb.net/familyLocation?retryWrites=true&w=majority&appName=Cluster0";
+            "mongodb+srv://rishi:Test123@cluster0.myylxse.mongodb.net/familyLocation?retryWrites=true&w=majority&appName=Cluster0";
 
         await mongoose.connect(MONGO_URI);
 
@@ -71,7 +71,6 @@ const Location = mongoose.model("Location", locationSchema);
 // ======================
 
 app.post("/location", async (req, res) => {
-
     try {
 
         const { phone, latitude, longitude } = req.body;
@@ -108,7 +107,6 @@ app.post("/location", async (req, res) => {
         });
 
     }
-
 });
 
 // ======================
@@ -116,7 +114,6 @@ app.post("/location", async (req, res) => {
 // ======================
 
 app.get("/locations", async (req, res) => {
-
     try {
 
         const locations = await Location.find().sort({ time: -1 });
@@ -130,7 +127,6 @@ app.get("/locations", async (req, res) => {
         res.status(500).json([]);
 
     }
-
 });
 
 // ======================
