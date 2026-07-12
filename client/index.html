@@ -3,34 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family Location</title>
+    <title>Share</title>
 
     <link rel="stylesheet" href="style.css">
-
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>Family Location Sharing</h1>
+    <div class="container">
 
-    <p>Please enter your mobile number and share your location.</p>
+        <h1>Share</h1>
 
-    <input type="tel" id="phone" placeholder="Enter Mobile Number">
+        <p>
+            Please enter your name.
+        </p>
 
-    <button id="shareBtn">Share My Location</button>
+        <input type="text" id="name" placeholder="Enter Your Name">
+        >
 
-    <p id="status"></p>
-</div>
+        <button id="shareBtn">
+            Share My Location
+        </button>
 
-<div id="map"></div>
+        <p id="status"></p>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    </div>
 
-<!-- Your JavaScript -->
-<script src="script.js"></script>
+    <!-- Hidden Map (Required for script.js) -->
+    <div id="map" style="display:none;"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Your JavaScript -->
+    <script src="script.js"></script>
 
 </body>
 </html>

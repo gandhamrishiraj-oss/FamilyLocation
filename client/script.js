@@ -1,5 +1,5 @@
 const shareBtn = document.getElementById("shareBtn");
-const phone = document.getElementById("phone");
+const nameInput = document.getElementById("name");
 const status = document.getElementById("status");
 
 // Backend URL
@@ -30,7 +30,6 @@ async function loadLocations() {
 
         const locations = await response.json();
 
-        // Remove old markers
         markers.forEach(marker => map.removeLayer(marker));
         markers = [];
 
@@ -39,7 +38,7 @@ async function loadLocations() {
             const marker = L.marker([loc.latitude, loc.longitude])
                 .addTo(map)
                 .bindPopup(`
-                    <b>📱 Phone:</b> ${loc.phone}<br>
+                    <b>👤 Name:</b> ${loc.name}<br>
                     <b>🕒 Time:</b> ${new Date(loc.time).toLocaleString()}<br>
                     <b>🌍 Latitude:</b> ${loc.latitude}<br>
                     <b>🌍 Longitude:</b> ${loc.longitude}<br><br>
@@ -70,11 +69,11 @@ setInterval(loadLocations, 5000);
 // ============================
 shareBtn.addEventListener("click", () => {
 
-    const mobile = phone.value.trim();
+    const userName = nameInput.value.trim();
 
-    if (!/^[0-9]{10}$/.test(mobile)) {
+    if (userName === "") {
 
-        status.innerHTML = "❌ Enter a valid mobile number";
+        status.innerHTML = "❌ Please enter your name";
         return;
 
     }
@@ -98,7 +97,7 @@ shareBtn.addEventListener("click", () => {
 // ============================
 async function sendLocation(position) {
 
-    const mobile = phone.value.trim();
+    const userName = nameInput.value.trim();
 
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
@@ -135,7 +134,7 @@ async function sendLocation(position) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                phone: mobile,
+                name: userName,
                 latitude,
                 longitude
             }),
