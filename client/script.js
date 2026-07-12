@@ -2,6 +2,9 @@ const shareBtn = document.getElementById("shareBtn");
 const phone = document.getElementById("phone");
 const status = document.getElementById("status");
 
+// Backend URL
+const API_URL = "https://family-location-server.onrender.com";
+
 // Create Map
 const map = L.map("map").setView([20.5937, 78.9629], 5);
 
@@ -17,7 +20,7 @@ let markers = [];
 // --------------------
 async function loadLocations() {
     try {
-        const response = await fetch("http://localhost:3000/locations");
+        const response = await fetch(`${API_URL}/locations`);
 
         if (!response.ok) {
             throw new Error("Cannot load locations");
@@ -95,7 +98,7 @@ shareBtn.addEventListener("click", () => {
                 controller.abort();
             }, 10000);
 
-            const response = await fetch("http://localhost:3000/location", {
+            const response = await fetch(`${API_URL}/location`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -110,11 +113,7 @@ shareBtn.addEventListener("click", () => {
 
             clearTimeout(timer);
 
-            console.log("Status:", response.status);
-
             const data = await response.json();
-
-            console.log(data);
 
             if (data.success) {
                 status.innerHTML = "✅ Location Shared Successfully";
