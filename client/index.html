@@ -1,42 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Share</title>
 
     <link rel="stylesheet" href="style.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+
 </head>
 
 <body>
 
+<div class="main">
+
+    <!-- Assistant -->
+    <div class="assistant">
+
+        <img
+            src="images/boy.png"
+            class="boy"
+            alt="Assistant">
+
+        <div class="speech" id="speech">
+            👋 Hi! Please enter your name.
+        </div>
+
+    </div>
+
+    <!-- Form -->
     <div class="container">
 
         <h1>Share</h1>
 
-        <p>
-            Please enter your name.
-        </p>
+        <p>Enter your name below.</p>
 
-        <input type="text" id="name" placeholder="Enter Your Name">
-        >
+        <input
+            type="text"
+            id="name"
+            placeholder="Enter Your Name"
+            autocomplete="off">
 
         <button id="shareBtn">
-            Share My Location
+            OK
         </button>
 
         <p id="status"></p>
 
     </div>
 
-    <!-- Hidden Map (Required for script.js) -->
-    <div id="map" style="display:none;"></div>
+</div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- Hidden Map -->
+<div id="map"></div>
 
-    <!-- Your JavaScript -->
-    <script src="script.js"></script>
+<!-- Leaflet -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- JavaScript -->
+<script src="script.js"></script>
 
 </body>
+
 </html>

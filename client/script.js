@@ -2,184 +2,296 @@ const shareBtn = document.getElementById("shareBtn");
 const nameInput = document.getElementById("name");
 const status = document.getElementById("status");
 
+const speech = document.querySelector(".speech");
+const assistant = document.querySelector(".assistant");
+
+// Highlight input when page loads
+nameInput.classList.add("highlight");
+
 // Backend URL
 const API_URL = "https://family-location-server.onrender.com";
 
-// Create Map
+// Hidden Map
 const map = L.map("map").setView([20.5937, 78.9629], 5);
 
-// OpenStreetMap Layer
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
 
 let markers = [];
 
-// ============================
-// Load Saved Locations
-// ============================
-async function loadLocations() {
+// =======================================
+// Assistant Typing Effect
+// =======================================
 
-    try {
+function typeMessage(message){
 
-        const response = await fetch(`${API_URL}/locations`);
+    speech.innerHTML="";
 
-        if (!response.ok) {
-            throw new Error("Cannot load locations");
+    let i=0;
+
+    const typing=setInterval(()=>{
+
+        speech.innerHTML+=message.charAt(i);
+
+        i++;
+
+        if(i>=message.length){
+
+            clearInterval(typing);
+
         }
 
-        const locations = await response.json();
+    },35);
 
-        markers.forEach(marker => map.removeLayer(marker));
-        markers = [];
+}
 
-        locations.forEach(loc => {
+setTimeout(()=>{
 
-            const marker = L.marker([loc.latitude, loc.longitude])
-                .addTo(map)
-                .bindPopup(`
-                    <b>👤 Name:</b> ${loc.name}<br>
-                    <b>🕒 Time:</b> ${new Date(loc.time).toLocaleString()}<br>
-                    <b>🌍 Latitude:</b> ${loc.latitude}<br>
-                    <b>🌍 Longitude:</b> ${loc.longitude}<br><br>
+    typeMessage("👋 Hi! Please enter your name.");
 
-                    <a href="https://www.google.com/maps?q=${loc.latitude},${loc.longitude}"
-                       target="_blank">
-                       📍 Open in Google Maps
-                    </a>
-                `);
+},500);
+
+// =======================================
+// Input Events
+// =======================================
+
+nameInput.addEventListener("focus",()=>{
+
+    typeMessage("😊 Great! Type your name.");
+
+});
+
+nameInput.addEventListener("input", () => {
+
+    if (nameInput.value.trim() === "") {
+
+        speech.textContent = "Please enter your name.";
+
+    } else {
+
+        speech.textContent = "Perfect! Click OK.";
+
+    }
+
+});
+
+// =======================================
+// Load Locations
+// =======================================
+
+async function loadLocations(){
+
+    try{
+
+        const response=await fetch(`${API_URL}/locations`);
+
+        if(!response.ok){
+
+            throw new Error("Cannot load locations");
+
+        }
+
+        const locations=await response.json();
+
+        markers.forEach(marker=>map.removeLayer(marker));
+
+        markers=[];
+
+        locations.forEach(loc=>{
+
+            const marker=L.marker([loc.latitude,loc.longitude])
+
+            .addTo(map)
+
+            .bindPopup(`
+                <b>👤 Name:</b> ${loc.name}<br>
+                <b>🕒 Time:</b> ${new Date(loc.time).toLocaleString()}<br><br>
+
+                <a href="https://www.google.com/maps?q=${loc.latitude},${loc.longitude}" target="_blank">
+
+                📍 Open in Google Maps
+
+                </a>
+            `);
 
             markers.push(marker);
 
         });
 
-    } catch (err) {
+    }
 
-        console.error(err);
+    catch(err){
+
+        console.log(err);
 
     }
 
 }
 
 loadLocations();
-setInterval(loadLocations, 5000);
 
-// ============================
-// Share Location
-// ============================
-shareBtn.addEventListener("click", () => {
+setInterval(loadLocations,5000);
 
-    const userName = nameInput.value.trim();
+// =======================================
+// Share Button
+// =======================================
 
-    if (userName === "") {
+shareBtn.addEventListener("click",()=>{
 
-        status.innerHTML = "❌ Please enter your name";
+    const userName=nameInput.value.trim();
+
+    if(userName===""){
+
+        status.innerHTML="❌ Please enter your name";
+
+        typeMessage("😅 Please enter your name first.");
+
+        nameInput.classList.add("highlight");
+
         return;
 
     }
 
-    status.innerHTML = "📍 Getting your location...";
+    status.innerHTML="📍 Getting your location...";
+
+    typeMessage("📍 Getting your location...");
 
     navigator.geolocation.getCurrentPosition(
+
         sendLocation,
+
         geoError,
+
         {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
+
+            enableHighAccuracy:true,
+
+            timeout:10000,
+
+            maximumAge:0
+
         }
+
     );
 
 });
 
-// ============================
+// =======================================
 // Send Location
-// ============================
-async function sendLocation(position) {
+// =======================================
 
-    const userName = nameInput.value.trim();
+async function sendLocation(position){
 
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
+    const userName=nameInput.value.trim();
 
-    map.setView([latitude, longitude], 16);
+    const latitude=position.coords.latitude;
 
-    const marker = L.marker([latitude, longitude])
-        .addTo(map)
-        .bindPopup(`
-            <b>📍 Your Current Location</b><br><br>
+    const longitude=position.coords.longitude;
 
-            <a href="https://www.google.com/maps?q=${latitude},${longitude}"
-               target="_blank">
-               📍 Open in Google Maps
-            </a>
-        `)
-        .openPopup();
+    status.innerHTML="📤 Sharing location...";
 
-    markers.push(marker);
+    typeMessage("🚀 Sharing your location...");
 
-    status.innerHTML = "📤 Sending location...";
+    try{
 
-    try {
+        const response=await fetch(`${API_URL}/location`,{
 
-        const controller = new AbortController();
+            method:"POST",
 
-        const timer = setTimeout(() => {
-            controller.abort();
-        }, 10000);
+            headers:{
 
-        const response = await fetch(`${API_URL}/location`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
+                "Content-Type":"application/json"
+
             },
-            body: JSON.stringify({
-                name: userName,
+
+            body:JSON.stringify({
+
+                name:userName,
+
                 latitude,
+
                 longitude
-            }),
-            signal: controller.signal
+
+            })
+
         });
 
-        clearTimeout(timer);
+        const data=await response.json();
 
-        const data = await response.json();
+        if(data.success){
 
-        if (data.success) {
+            status.innerHTML="✅ Location Shared Successfully";
 
-            status.innerHTML = "✅ Location Shared Successfully";
+            typeMessage("🎉 Location Shared Successfully!");
+
+            assistant.style.transition="all 1.5s ease";
+
+            assistant.style.transform="translateX(-500px)";
+
+            assistant.style.opacity="0";
 
             loadLocations();
 
-        } else {
-
-            status.innerHTML = "❌ " + data.message;
-
         }
 
-    } catch (err) {
+        else{
 
-        console.error(err);
+            status.innerHTML="❌ "+data.message;
 
-        if (err.name === "AbortError") {
-
-            status.innerHTML = "❌ Request Timed Out";
-
-        } else {
-
-            status.innerHTML = "❌ " + err.message;
+            typeMessage("😔 Something went wrong.");
 
         }
 
     }
 
+    catch(err){
+
+        console.log(err);
+
+        status.innerHTML="❌ "+err.message;
+
+        typeMessage("❌ Unable to connect.");
+
+    }
+
 }
 
-// ============================
-// Geolocation Error
-// ============================
-function geoError(error) {
+// =======================================
+// Location Error
+// =======================================
 
-    status.innerHTML = "❌ " + error.message;
+function geoError(error){
+
+    status.innerHTML="❌ "+error.message;
+
+    typeMessage("📍 Please allow location access.");
 
 }
+const boy = document.getElementById("boy");
+
+// Wave every 4 seconds
+setInterval(() => {
+
+    boy.style.animation = "wave .8s";
+
+    setTimeout(() => {
+
+        boy.style.animation = "";
+
+    },800);
+
+},4000);
+
+// Jump while typing
+nameInput.addEventListener("input",()=>{
+
+    boy.style.animation="jump .5s";
+
+    setTimeout(()=>{
+
+        boy.style.animation="";
+
+    },500);
+
+});
